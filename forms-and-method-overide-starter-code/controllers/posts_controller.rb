@@ -10,75 +10,58 @@ class PostsController < Sinatra::Base
       register Sinatra::Reloader
   end
 
-  $posts = [{
-      id: 0,
-      title: "Post 0",
-      body: "This is the first post"
-  },
-  {
-      id: 1,
-      title: "Post 1",
-      body: "This is the second post"
-  },
-  {
-      id: 2,
-      title: "Post 2",
-      body: "This is the third post"
-  }];
-
   get '/' do
-
       @title = "Blog posts"
-
-      @posts = $posts
-
+      # @posts = $posts
+      @posts = Post.all
       erb :'posts/index'
-
   end
 
   get '/new'  do
-
-    "NEW"
-
+    @post = Post.new
+    erb :'posts/new'
   end
 
   get '/:id' do
-
     # get the ID and turn it in to an integer
     id = params[:id].to_i
-
     # make a single post object available in the template
-    @post = $posts[id]
-
+    # @post = $posts[id]
+    @post = Post.find(id)
     erb :'posts/show'
-
   end
 
   post '/' do
-
-    "CREATE"
-
+    post = Post.new
+    post.title = params[:title]
+    post.body = params[:body]
+    post.save
+    redirect "/"
   end
 
-
-
-
   put '/:id'  do
-
-    "UPDATE: #{params[:id]}"
-
+    id = params[:id].to_i
+    # variable of the current post information
+    # post = $posts[id]
+    post = Post.find(id)
+    # manipulate the varibale to be the new data
+    post.title = params[:title]
+    post.body = params[:body]
+    # change the orignal data to be the new data
+    post.save
+    redirect '/'
   end
 
   delete '/:id'  do
-
-    "DELETE: #{params[:id]}"
-
+    id = params[:id].to_i
+    Post.remove(id)
+    redirect "/"
   end
 
   get '/:id/edit'  do
-
-    "EDIT: #{params[:id]}"
-
+    id = params[:id].to_i
+    # @post = $posts[id]
+    @post = Post.find(id)
+    erb :'posts/edit'
   end
-
 end
